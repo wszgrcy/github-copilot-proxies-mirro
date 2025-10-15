@@ -4,6 +4,11 @@ FROM golang:1.21-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
+# 设置Go代理为国内镜像源
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GOSUMDB=sum.golang.google.cn
+ENV GO111MODULE=on
+
 # 复制源代码
 COPY . .
 
