@@ -52,7 +52,7 @@ func setupBasicRoutes(g *gin.RouterGroup, config *Config) {
 	g.Any("/models", createModelsHandler(config))
 	g.Any("/models/session", createModelsHandler(config))
 	g.Any("/_ping", GetPing)
-	g.Any("/telemetry", PostTelemetry)
+	g.POST("/telemetry", PostTelemetry)
 	g.Any("/agents", GetAgents)
 	g.Any("/copilot_internal/user", GetCopilotInternalUser)
 	g.Any("/embeddings/models", EmbeddingModels)
