@@ -24,7 +24,7 @@ RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 使用轻量级的 alpine 镜像
-FROM alpine:latest
+FROM alpine:latest AS runner
 
 RUN apk --no-cache add ca-certificates
 
