@@ -38,6 +38,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{github.actor}}/gcp:b${{ env.COUNT }}
+          tags: ghcr.io/${{github.actor}}/gcp:b${{ env.CCOUNT }}
           labels: ${{ steps.meta.outputs.labels }}
           target: builder
