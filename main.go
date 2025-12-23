@@ -17,10 +17,11 @@ import (
 	"syscall"
 	"time"
 
+	"ripper/internal/router"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"golang.org/x/sync/errgroup"
-	"ripper/internal/router"
 )
 
 // 检查端口是否被占用，如果被占用则退出程序
@@ -106,7 +107,7 @@ func main() {
 				MaxVersion: tls.VersionTLS13,
 			},
 			ReadTimeout:  30 * time.Second,
-			WriteTimeout: 60 * time.Second,
+			WriteTimeout: 999 * time.Second,
 		}
 
 		g.Go(func() error {

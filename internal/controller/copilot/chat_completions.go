@@ -6,10 +6,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gofrs/uuid"
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 	"io"
 	"log"
 	"net/http"
@@ -17,6 +13,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 )
 
 // ChatCompletions chat对话接口
@@ -83,7 +84,24 @@ func ChatCompletions(c *gin.Context) {
 		body, _ = sjson.DeleteBytes(body, "function_call")
 		body, _ = sjson.DeleteBytes(body, "tool_choice")
 	}
-
+	if gjson.GetBytes(body, "tools").Exists() {
+		for i := 0; i < len(gjson.GetBytes(body, "tools").Array()); i++ {
+			if !gjson.GetBytes(body, fmt.Sprintf("tools.%d", i)).Exists() {
+				continue
+			}
+			if !gjson.GetBytes(body, fmt.Sprintf("tools.%d.function", i)).Exists() {
+				continue
+			}
+			if !gjson.GetBytes(body, fmt.Sprintf("tools.%d.function.parameters", i)).Exists() {
+				defaultParams := map[string]interface{}{
+					"type":       "object",
+					"properties": map[string]interface{}{},
+				}
+				path := fmt.Sprintf("tools.%d.function.parameters", i)
+				body, _ = sjson.SetBytes(body, path, defaultParams)
+			}
+		}
+	}
 	ChatMaxTokens, _ := strconv.Atoi(os.Getenv("CHAT_MAX_TOKENS"))
 	if int(gjson.GetBytes(body, "max_tokens").Int()) > ChatMaxTokens {
 		body, _ = sjson.SetBytes(body, "max_tokens", ChatMaxTokens)
