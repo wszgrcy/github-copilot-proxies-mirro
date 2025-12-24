@@ -1,8 +1,9 @@
 package copilot
 
 import (
-	"encoding/json"
+	"bytes"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -24,19 +25,22 @@ func HandleEmbeddings(c *gin.Context) {
 	requestID := uuid.Must(uuid.NewV4()).String()
 	c.Header("x-github-request-id", requestID)
 	body, err := io.ReadAll(c.Request.Body)
-	// 将 body 转换为 JSON 并打印
-	var jsonData interface{}
-	err = json.Unmarshal(body, &jsonData)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的JSON格式"})
-		return
-	}
+	log.Println("Raw body:", string(body))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+	// // 将 body 转换为 JSON 并打印
+	// var jsonData interface{}
+	// err = json.Unmarshal(body, &jsonData)
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "无效的JSON格式"})
+	// 	return
+	// }
 
-	// 打印解析后的 JSON 数据
-	jsonBytes, _ := json.MarshalIndent(jsonData, "", "  ")
-	println(string(jsonBytes))
+	// // 打印解析后的 JSON 数据
+	// jsonBytes, _ := json.MarshalIndent(jsonData, "", "  ")
+	// println(string(jsonBytes))
 	var req EmbeddingsAPIRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println("Binding error:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
