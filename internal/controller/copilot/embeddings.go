@@ -1,8 +1,6 @@
 package copilot
 
 import (
-	"bytes"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -24,9 +22,9 @@ type EmbeddingsAPIRequest struct {
 func HandleEmbeddings(c *gin.Context) {
 	requestID := uuid.Must(uuid.NewV4()).String()
 	c.Header("x-github-request-id", requestID)
-	body, err := io.ReadAll(c.Request.Body)
-	log.Println("Raw body:", string(body))
-	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
+	// body, err := io.ReadAll(c.Request.Body)
+	// log.Println("Raw body:", string(body))
+	// c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 	// // 将 body 转换为 JSON 并打印
 	// var jsonData interface{}
 	// err = json.Unmarshal(body, &jsonData)
