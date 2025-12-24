@@ -3,13 +3,14 @@ package copilot
 import (
 	_ "embed"
 	"encoding/json"
-	"github.com/gofrs/uuid"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/gofrs/uuid"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,8 +35,9 @@ func GetPing(ctx *gin.Context) {
 
 // ModelsResponse 模型列表响应结构
 type ModelsResponse struct {
-	Data   []interface{} `json:"data"`
-	Object string        `json:"object"`
+	Data       []interface{} `json:"data"`
+	Object     string        `json:"object"`
+	Expires_At int           `json:"expires_at"`
 }
 
 // GetModels 获取模型列表
