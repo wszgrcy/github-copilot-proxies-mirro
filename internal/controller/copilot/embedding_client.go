@@ -28,8 +28,8 @@ type EmbeddingRequest struct {
 
 // EmbeddingResponse 表示从嵌入API接收的响应
 type EmbeddingResponse struct {
-	Data   []EmbeddingData `json:"data"`
-	Model  string          `json:"model"`
+	Data   []EmbeddingData `json:"embeddings"`
+	Model  string          `json:"embedding_model"`
 	Object string          `json:"object"`
 	Usage  Usage           `json:"usage"`
 }
