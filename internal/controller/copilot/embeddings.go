@@ -1,6 +1,8 @@
 package copilot
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -21,7 +23,18 @@ type EmbeddingsAPIRequest struct {
 func HandleEmbeddings(c *gin.Context) {
 	requestID := uuid.Must(uuid.NewV4()).String()
 	c.Header("x-github-request-id", requestID)
+	body, err := io.ReadAll(c.Request.Body)
+	// 将 body 转换为 JSON 并打印
+	var jsonData interface{}
+	err = json.Unmarshal(body, &jsonData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的JSON格式"})
+		return
+	}
 
+	// 打印解析后的 JSON 数据
+	jsonBytes, _ := json.MarshalIndent(jsonData, "", "  ")
+	println(string(jsonBytes))
 	var req EmbeddingsAPIRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
