@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -162,10 +163,10 @@ func (c *EmbeddingClient) GetEmbeddings(ctx context.Context, texts []string) (*E
 	}
 
 	var embeddingResp EmbeddingResponse
-
-	body, _ = sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data").Array())
-	body, _ = sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model").String())
-
+	log.Println(string(body))
+	body, _ = sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data"))
+	body, _ = sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model"))
+	log.Println(string(body))
 	if err := json.Unmarshal(body, &embeddingResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
