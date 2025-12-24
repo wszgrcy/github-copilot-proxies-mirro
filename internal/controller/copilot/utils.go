@@ -37,7 +37,7 @@ func GetPing(ctx *gin.Context) {
 type ModelsResponse struct {
 	Data       []interface{} `json:"data"`
 	Object     string        `json:"object"`
-	Expires_At int           `json:"expires_at"`
+	Expires_At int64         `json:"expires_at"`
 }
 
 // GetModels 获取模型列表
@@ -65,7 +65,7 @@ func GetModels(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "无法解析模型列表数据"})
 		return
 	}
-	modelsResponse.Expires_At = time.Now().Add(24 * time.Hour).Second()
+	modelsResponse.Expires_At = time.Now().Add(1 * time.Hour).Unix()
 	// 返回模型列表数据
 	requestID := uuid.Must(uuid.NewV4()).String()
 	ctx.Header("x-github-request-id", requestID)
