@@ -11,6 +11,9 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 )
 
 // 常量定义
@@ -159,6 +162,11 @@ func (c *EmbeddingClient) GetEmbeddings(ctx context.Context, texts []string) (*E
 	}
 
 	var embeddingResp EmbeddingResponse
+
+	sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data").Array())
+	sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model").String())
+	// sjson.DeleteBytes(body, "data")
+	// sjson.DeleteBytes(body, "embedding_model")
 	if err := json.Unmarshal(body, &embeddingResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
