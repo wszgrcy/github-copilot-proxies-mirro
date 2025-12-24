@@ -4,12 +4,13 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"github.com/gofrs/uuid"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/gofrs/uuid"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,6 +51,7 @@ type Chunk struct {
 	Hash      string    `json:"hash"`
 	Text      string    `json:"text"`
 	Range     Range     `json:"range"`
+	LineRange Range     `json:"line_range"`
 	Embedding Embedding `json:"embedding,omitempty"`
 }
 
@@ -62,6 +64,7 @@ type Range struct {
 // Embedding 表示向量嵌入
 type Embedding struct {
 	Embedding []float32 `json:"embedding"`
+	Model     string    `json:"model"`
 }
 
 // ChunkResponse 表示分块响应
@@ -103,7 +106,7 @@ func HandleChunks(c *gin.Context) {
 		return
 	}
 
-	chunks := service.SplitIntoChunks(req.Content, req.Path)
+	chunks := service.SplitIntoChunks(req.Content, req.Path, service.modelName)
 
 	if req.Embed {
 		if err := service.GenerateEmbeddings(c.Request.Context(), chunks); err != nil {
@@ -123,7 +126,7 @@ func HandleChunks(c *gin.Context) {
 }
 
 // SplitIntoChunks 将内容分割成块
-func (s *ChunkService) SplitIntoChunks(content, path string) []Chunk {
+func (s *ChunkService) SplitIntoChunks(content, path string, model string) []Chunk {
 	var chunks []Chunk
 	lines := strings.Split(content, "\n")
 	chunkSize := getChunkSize()
@@ -142,7 +145,7 @@ func (s *ChunkService) SplitIntoChunks(content, path string) []Chunk {
 		if sb.Len()+len(lineWithNewline) > chunkSize && sb.Len() > 0 {
 			// 创建新的chunk
 			chunkText := sb.String()
-			chunk := s.createChunk(chunkText, path, start, start+len(chunkText))
+			chunk := s.createChunk(chunkText, path, start, start+len(chunkText), model)
 			chunks = append(chunks, chunk)
 
 			start += len(chunkText)
@@ -156,7 +159,7 @@ func (s *ChunkService) SplitIntoChunks(content, path string) []Chunk {
 	// 添加最后一个chunk
 	if sb.Len() > 0 {
 		chunkText := sb.String()
-		chunk := s.createChunk(chunkText, path, start, start+len(chunkText))
+		chunk := s.createChunk(chunkText, path, start, start+len(chunkText), model)
 		chunks = append(chunks, chunk)
 	}
 
@@ -164,7 +167,7 @@ func (s *ChunkService) SplitIntoChunks(content, path string) []Chunk {
 }
 
 // createChunk 创建一个新的内容块
-func (s *ChunkService) createChunk(text, path string, start, end int) Chunk {
+func (s *ChunkService) createChunk(text, path string, start, end int, model string) Chunk {
 	// 计算文本的SHA-256哈希
 	hash := sha256.Sum256([]byte(text))
 
@@ -172,6 +175,10 @@ func (s *ChunkService) createChunk(text, path string, start, end int) Chunk {
 		Hash: fmt.Sprintf("%x", hash),
 		Text: fmt.Sprintf(markdownFilePrefix+"%s"+markdownFileSuffix, path, text),
 		Range: Range{
+			Start: start,
+			End:   end,
+		},
+		LineRange: Range{
 			Start: start,
 			End:   end,
 		},
