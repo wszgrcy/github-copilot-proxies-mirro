@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"ripper/internal/app/github_auth"
 	"ripper/internal/response"
 	jwtpkg "ripper/pkg/jwt"
@@ -147,8 +148,8 @@ func TokenCheckAuth() gin.HandlerFunc {
 		}
 		token = token[last+1:]
 		parsedToken := parseAuthorizationToken(token)
-		fmt.Sprintf("parsedToken type: %T, value: %+v\n", parsedToken, parsedToken)
-		log.Println("parsedToken type: %T, value: %+v\n", parsedToken, parsedToken)
+		log.Println("parsedToken type: %T, value: %+v\n", parsedToken)
+		log.Println("exp", parsedToken["exp"], reflect.TypeOf(parsedToken["exp"]))
 		// 校验exp是否过期
 		expired, err := isExpired(parsedToken["exp"])
 		if err != nil {
