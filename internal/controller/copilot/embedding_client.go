@@ -7,14 +7,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"sync"
 	"time"
-
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 // 常量定义
@@ -32,10 +28,12 @@ type EmbeddingRequest struct {
 
 // EmbeddingResponse 表示从嵌入API接收的响应
 type EmbeddingResponse struct {
-	Data   []EmbeddingData `json:"embeddings"`
-	Model  string          `json:"embedding_model"`
-	Object string          `json:"object"`
-	Usage  Usage           `json:"usage"`
+	Data            []EmbeddingData `json:"data"`
+	Model           string          `json:"model"`
+	Embeddings      []EmbeddingData `json:"embeddings"`
+	Embedding_model string          `json:"embedding_model"`
+	Object          string          `json:"object"`
+	Usage           Usage           `json:"usage"`
 }
 
 // EmbeddingData 表示单个嵌入数据
@@ -163,13 +161,14 @@ func (c *EmbeddingClient) GetEmbeddings(ctx context.Context, texts []string) (*E
 	}
 
 	var embeddingResp EmbeddingResponse
-	log.Println(string(body))
-	body, _ = sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data"))
-	body, _ = sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model"))
-	log.Println(string(body))
+	// log.Println(string(body))
+	// body, _ = sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data").Raw)
+	// body, _ = sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model").Raw)
+	// log.Println(string(body))
 	if err := json.Unmarshal(body, &embeddingResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
-
+	embeddingResp.Embeddings = embeddingResp.Data
+	embeddingResp.Embedding_model = embeddingResp.Model
 	return &embeddingResp, nil
 }
