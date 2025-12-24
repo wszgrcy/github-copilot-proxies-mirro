@@ -163,10 +163,9 @@ func (c *EmbeddingClient) GetEmbeddings(ctx context.Context, texts []string) (*E
 
 	var embeddingResp EmbeddingResponse
 
-	sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data").Array())
-	sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model").String())
-	// sjson.DeleteBytes(body, "data")
-	// sjson.DeleteBytes(body, "embedding_model")
+	body, _ = sjson.SetBytes(body, "embeddings", gjson.GetBytes(body, "data").Array())
+	body, _ = sjson.SetBytes(body, "embedding_model", gjson.GetBytes(body, "model").String())
+
 	if err := json.Unmarshal(body, &embeddingResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
