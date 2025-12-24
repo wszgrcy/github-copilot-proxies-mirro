@@ -65,7 +65,7 @@ func GetModels(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "无法解析模型列表数据"})
 		return
 	}
-
+	modelsResponse.Expires_At = time.Now().Add(24 * time.Hour).Second()
 	// 返回模型列表数据
 	requestID := uuid.Must(uuid.NewV4()).String()
 	ctx.Header("x-github-request-id", requestID)
