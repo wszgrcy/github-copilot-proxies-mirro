@@ -70,6 +70,10 @@ func EmbeddingModels(c *gin.Context) {
 		"data": []gin.H{
 			{"id": modelName, "object": "model", "owned_by": "openai", "permission": []string{}},
 		},
+		//src\platform\workspaceChunkSearch\common\githubAvailableEmbeddingTypes.ts 165
+		"models": []gin.H{
+			{"id": modelName, "active": true},
+		},
 		"object": "list",
 	})
 }
