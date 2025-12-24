@@ -1,18 +1,19 @@
 package copilot
 
 import (
-	"github.com/gofrs/uuid"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/gofrs/uuid"
 
 	"github.com/gin-gonic/gin"
 )
 
 // EmbeddingsAPIRequest 表示嵌入API的请求结构
 type EmbeddingsAPIRequest struct {
-	Input      []string `json:"input" binding:"required"`
-	Model      string   `json:"model,omitempty"`
+	Input      []string `json:"inputs" binding:"required"`
+	Model      string   `json:"embedding_model,omitempty"`
 	Dimensions int      `json:"dimensions,omitempty"`
 }
 
