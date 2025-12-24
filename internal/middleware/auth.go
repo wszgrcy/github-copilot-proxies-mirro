@@ -135,16 +135,12 @@ func TokenCheckAuth() gin.HandlerFunc {
 		}
 		token := c.Request.Header.Get("Authorization")
 		if token == "" {
-			fmt.Sprintf("return3")
-			log.Println("return3")
 			response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenWrongful, false)
 			c.Abort()
 			return
 		}
 		last := strings.Index(token, " ")
 		if len(token) < last || last == -1 {
-			fmt.Sprintf("return4")
-			log.Println("return4")
 			response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenWrongful, false)
 			c.Abort()
 			return
@@ -152,11 +148,12 @@ func TokenCheckAuth() gin.HandlerFunc {
 		token = token[last+1:]
 		parsedToken := parseAuthorizationToken(token)
 		fmt.Sprintf("parsedToken type: %T, value: %+v\n", parsedToken, parsedToken)
+		log.Println("parsedToken type: %T, value: %+v\n", parsedToken, parsedToken)
 		// 校验exp是否过期
 		expired, err := isExpired(parsedToken["exp"])
 		if err != nil {
 			fmt.Sprintf("return1")
-			log.Println("return1")
+			log.Println("return1", err.Error())
 			response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenWrongful, false)
 			c.Abort()
 			return
