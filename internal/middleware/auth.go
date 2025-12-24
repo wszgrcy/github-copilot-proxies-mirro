@@ -2,10 +2,8 @@ package middleware
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"ripper/internal/app/github_auth"
 	"ripper/internal/response"
 	jwtpkg "ripper/pkg/jwt"
@@ -147,26 +145,29 @@ func TokenCheckAuth() gin.HandlerFunc {
 			return
 		}
 		token = token[last+1:]
-		parsedToken := parseAuthorizationToken(token)
-		log.Println("parsedToken type: %T, value: %+v\n", parsedToken)
-		log.Println("exp", parsedToken["exp"], reflect.TypeOf(parsedToken["exp"]))
-		// 校验exp是否过期
-		expired, err := isExpired(parsedToken["exp"])
 		if err != nil {
-			fmt.Sprintf("return1")
-			log.Println("return1", err.Error())
-			response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenWrongful, false)
-			c.Abort()
-			return
-		} else {
-			if expired {
-				fmt.Sprintf("return2")
-				log.Println("return2")
-				response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenOverdue, false)
-				c.Abort()
-				return
-			}
+
 		}
+		// parsedToken := parseAuthorizationToken(token)
+		// log.Println("parsedToken type: %T, value: %+v\n", parsedToken)
+		// log.Println("exp", parsedToken["exp"], reflect.TypeOf(parsedToken["exp"]))
+		// 校验exp是否过期
+		// expired, err := isExpired(parsedToken["exp"])
+		// if err != nil {
+		// 	fmt.Sprintf("return1")
+		// 	log.Println("return1", err.Error())
+		// 	response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenWrongful, false)
+		// 	c.Abort()
+		// 	return
+		// } else {
+		// 	if expired {
+		// 		fmt.Sprintf("return2")
+		// 		log.Println("return2")
+		// 		response.FailJsonAndStatusCode(c, http.StatusUnauthorized, response.TokenOverdue, false)
+		// 		c.Abort()
+		// 		return
+		// 	}
+		// }
 		// 貌似是token验证失败,反正是我自己用,先注释
 		// rawToken := github_auth.JsonMap2Token(map[string]interface{}{
 		// 	"tid":  parsedToken["tid"],
